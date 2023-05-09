@@ -1,19 +1,23 @@
 version: '3.1'
 services:
   website:
+    container_name: website
     image: php:apache
     environment:
-      - USERNAME=francis
-      - PASSWORD=francis123
+      - USERNAME=toto
+      - PASSWORD=python
     depends_on:
       - api
     ports:
       - "80:80"
     volumes:
-      - ./website:/var/www/html
+      - /home/vagrant/student-list/website:/var/www/html
   api:
+    container_name: api
     image: simple_api:v1
     volumes:
-      - ./student_age.json:/data
+      - /home/vagrant/student-list/simple_api:/data
     ports:
       - "5000:5000"
+#volumes:
+#  website:
