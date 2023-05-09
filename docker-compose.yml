@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  website:
+    image: php:apache
+    environment:
+      - USERNAME=francis
+      - PASSWORD=francis123
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    volumes:
+      - ./website:/var/www/html
+  api:
+    image: simple_api:v1
+    volumes:
+      - ./student_age.json:/data
+    ports:
+      - "5000:5000"
