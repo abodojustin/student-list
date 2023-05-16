@@ -1,23 +1,54 @@
-version: '3.1'
+version: '3.3'
 services:
-  website:
-    container_name: website
-    image: php:apache
+  studentlist:
+    container_name: studentlist
+    networks:
+      - bootcamp13
+    # ports:
+    #     - '5000'
+    volumes:
+      - '$PWD/simple_api/student_age.json:/data/student_age.json'
+    image: 'studentlist:v1'
+
+  studentlist-ihm:
     environment:
       - USERNAME=toto
       - PASSWORD=python
+    container_name: ihm
+    networks:
+      - bootcamp13
+    ports:
+      - '80:80'
     depends_on:
-      - api
-    ports:
-      - "80:80"
+      - studentlist
     volumes:
-      - /home/vagrant/student-list/website:/var/www/html
-  api:
-    container_name: api
-    image: simple_api:v1
-    volumes:
-      - /home/vagrant/student-list/simple_api:/data
+      - './website:/var/www/html'
+    image: 'php:apache'
+
+  registry:
+    container_name: registry
+    networks:
+      - registry
     ports:
-      - "5000:5000"
-#volumes:
-#  website:
+      - '9500:5000'
+    image: registry:2
+
+  registry-ui:
+    depends_on:
+      - registry
+    image: joxit/docker-registry-ui
+    ports:
+      - "8080:80"
+    networks:
+      - registry
+    environment:
+      - REGISTRY_URL="http://registry:5000"
+      - REGISTRY_TITLE="BOOTCAMP 13"
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+      - SINGLE_REGISTRY=true
+      - DELETE_IMAGES=true
+      - CATALOG_ELEMENTS_LIMIT=10
+
+networks:
+  bootcamp13:
+  registry:
